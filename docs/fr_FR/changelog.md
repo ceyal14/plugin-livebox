@@ -1,7 +1,7 @@
 
 # WARNING:
 
-Detail complet des mises à jour sur https://github.com/jmvedrine/plugin-livebox/commits/master
+Detail complet des mises à jour sur https://github.com/ceyal14/plugin-livebox/commits/master
 
 # Anciennes évolutions :
 
@@ -157,3 +157,12 @@ Compatibilité avec PHP 8
 - Mise à jour de la documentation
 
 # Version du 01/05/2024 (passage en stable)
+
+# Version du 01/06/2024
+
+- Ajout de l'interface réseau utilisée sur les clients
+- Changements mineurs (masque l'adresse MAC par defaut sur les clients, tipo)
+
+# Version du 27/10/2024
+
+- Changement du depot du plugin https://github.com/jmvedrine/plugin-livebox par https://github.com/ceyal14/plugin-livebox
