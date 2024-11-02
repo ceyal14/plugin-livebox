@@ -166,3 +166,9 @@ Compatibilité avec PHP 8
 # Version du 27/10/2024
 
 - Changement du depot du plugin https://github.com/jmvedrine/plugin-livebox par https://github.com/ceyal14/plugin-livebox
+
+# Version du 02/11/2024
+
+- Mise à jour de l'affichage dans le panel (et page santé)
+
+# Version du 02/11/2024 (passage en stable)
