@@ -5,14 +5,14 @@
 		"fr_FR": "Plugin pour Livebox 2, Play, 4, Fibre, 6, 7"
 	},
 	"licence" : "AGPL",
-	"author" : "JMVedrine",
+	"author" : "ceyal14",
 	"require" : "4.3.1",
 	"category" : "communication",
 	"display" : "panel",
-	"changelog" : "https://jmvedrine.github.io/plugin-livebox/#language#/changelog",
-	"documentation" : "https://jmvedrine.github.io/plugin-livebox/#language#/",
-	"changelog_beta" : "https://raw.githubusercontent.com/jmvedrine/plugin-livebox/beta/docs/#language#/changelog.md",
-	"documentation_beta" : "https://github.com/jmvedrine/plugin-livebox/blob/beta/docs/#language#/index.md",
+	"changelog" : "https://ceyal14.github.io/plugin-livebox/#language#/changelog",
+	"documentation" : "https://ceyal14.github.io/plugin-livebox/#language#/",
+	"changelog_beta" : "https://raw.githubusercontent.com/ceyal14/plugin-livebox/beta/docs/#language#/changelog.md",
+	"documentation_beta" : "https://github.com/ceyal14/plugin-livebox/blob/beta/docs/#language#/index.md",
 	"language" : ["fr_FR","en_US","de_DE","sp_SP","ru_RU","id_ID","it_IT"],
 	"compatibility" : ["smart","luna","atlas","rpi","docker","diy"]
 }

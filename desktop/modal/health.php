@@ -24,10 +24,11 @@ $eqLogics = livebox::byType('livebox');
 <table class="table table-condensed tablesorter" id="table_healthpiHole">
 	<thead>
 		<tr>
-			<th>{{Module}}</th>
+			<th>{{Equipement}}</th>
 			<th>{{Livebox}}</th>
 			<th>{{Adresse MAC}}</th>
 			<th>{{IP}}</th>
+			<th>{{Interface}}</th>
 			<th>{{Type}}</th>
 			<th>{{Présent}}</th>
 			<th>{{Première connexion}}</th>
@@ -36,16 +37,18 @@ $eqLogics = livebox::byType('livebox');
 		</tr>
 	</thead>
 	<tbody>
-	 <?php
+<?php
 foreach ($eqLogics as $eqLogic) {
 	if (!$eqLogic->getIsEnable()) continue;
-	echo '<tr><td><a href="' . $eqLogic->getLinkToConfiguration() . '" style="text-decoration: none;">' . $eqLogic->getHumanName(true) . '</a></td>';
+	echo '<tr>';
 	if ($eqLogic->getConfiguration('type')=='cli') {
+		echo '<td><a href="' . $eqLogic->getLinkToConfiguration() . '" style="text-decoration: none;">' . $eqLogic->getHumanName(true) . '</a></td>';
 		$boxid = $eqLogic->getConfiguration('boxId','');
 		$boxEqLogic = livebox::byId($boxid);
 		echo '<td><a href="' . $boxEqLogic->getLinkToConfiguration() . '" style="text-decoration: none;">' . $boxEqLogic->getHumanName(true) . '</a></td>';
 	} else {
 		echo '<td></td>';
+		echo '<td><a href="' . $eqLogic->getLinkToConfiguration() . '" style="text-decoration: none;">' . $eqLogic->getHumanName(true) . '</a></td>';
 	}
 	if ($eqLogic->getConfiguration('type')=='box') {
 		echo '<td><span class="label label-info" style="font-size : 1em;">' . $eqLogic->getConfiguration('BaseMAC') . '</span></td>';
@@ -58,6 +61,16 @@ foreach ($eqLogics as $eqLogic) {
 			 $value = $clicmd->execCmd();
 		}
 		echo '<td><span class="label label-info" style="font-size : 1em;">' . $value . '</span></td>';
+	}
+	if ($eqLogic->getConfiguration('type')=='cli') {
+		$clicmd = $eqLogic->getCmd('info', 'interface');
+		$value = '';
+		if (is_object($clicmd)) {
+			 $value = $clicmd->execCmd();
+		}
+		echo '<td><span class="label label-info" style="font-size : 1em;">' . $value . '</span></td>';
+	} else {
+		echo '<td></td>';
 	}
 	if ($eqLogic->getConfiguration('type')=='box') {
 		echo '<td><span class="label label-info" style="font-size : 1em;">' . $eqLogic->getConfiguration('productClass') . '</span></td>';
