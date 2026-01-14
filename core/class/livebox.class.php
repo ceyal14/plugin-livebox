@@ -1126,7 +1126,7 @@ class livebox extends eqLogic {
 						$cmd->save();
 					}
 				}
-				if (preg_match("/Livebox (4|Fibre|6|7|Nautilus)/i", $this->getConfiguration('productClass',''))) {
+				if (preg_match("/Livebox (4|Fibre|6|7|Nautilus|W7)/i", $this->getConfiguration('productClass',''))) {
 					$cmd = $this->getCmd(null, 'guestwifion');
 					if ( ! is_object($cmd) ) {
 						$cmd = new liveboxCmd();
@@ -1960,10 +1960,9 @@ class livebox extends eqLogic {
 							// Livebox Play, 4, 5
 							$this->setConfiguration('wifi24Name', 'wl0');
 							$statusvalue = $content["status"]["wlanvap"]["wl0"]["VAPStatus"];
-						}
-						else if (isset($content["status"]["wlanvap"]["vap2g0priv"]["VAPStatus"])) {
+						} else if (isset($content["status"]["wlanvap"]["vap2g0priv"]["VAPStatus"])) {
+							// Livebox S, W7
 							$this->setConfiguration('wifi24Name', 'vap2g0priv');
-							// Livebox S
 							$statusvalue = $content["status"]["wlanvap"]["vap2g0priv"]["VAPStatus"];
 						} else {
 							// Livebox unknown
@@ -1988,7 +1987,7 @@ class livebox extends eqLogic {
 							$this->setConfiguration('wifi5Name', 'eth4');
 							$statusvalue = $content["status"]["wlanvap"]["eth4"]["VAPStatus"];
 						} else if (isset($content["status"]["wlanvap"]["vap5g0priv"]["VAPStatus"])) {
-							// Livebox S
+							// Livebox S, W7
 							$this->setConfiguration('wifi5Name', 'vap5g0priv');
 							$statusvalue = $content["status"]["wlanvap"]["vap5g0priv"]["VAPStatus"];
 						} else {
@@ -2030,7 +2029,7 @@ class livebox extends eqLogic {
 					$eqLogic_cmd = $this->getCmd(null, 'wifi5status');
 					if (is_object($eqLogic_cmd)) {
 						if (isset($content["status"]["wlanvap"]["vap5g0priv0"]["VAPStatus"])) {
-							// Livebox 6.
+							// Livebox 6, 7
 							$this->setConfiguration('wifi5Name', 'vap5g0priv0');
 							$statusvalue = $content["status"]["wlanvap"]["vap5g0priv0"]["VAPStatus"];
 						} else {
@@ -2044,7 +2043,7 @@ class livebox extends eqLogic {
 					$eqLogic_cmd = $this->getCmd(null, 'wifi6status');
 					if (is_object($eqLogic_cmd)) {
 						if (isset($content["status"]["wlanvap"]["vap6g0priv0"]["VAPStatus"])) {
-							// Livebox 6.
+							// Livebox 6, 7
 							$this->setConfiguration('wifi6Name', 'vap6g0priv0');
 							$statusvalue = $content["status"]["wlanvap"]["vap6g0priv0"]["VAPStatus"];
 						} else {
@@ -2058,7 +2057,7 @@ class livebox extends eqLogic {
 				}
 			}
 		}
-		if (preg_match("/Livebox (4|Fibre|6|7|Nautilus)/i", $this->getConfiguration('productClass',''))) {
+		if (preg_match("/Livebox (4|Fibre|6|7|Nautilus|W7)/i", $this->getConfiguration('productClass',''))) {
 			($refreshonly != 'all' && $refreshonly != 'wifi') ? $content = false : $content = $this->getPage("guestwifistate");
 			if ( $content !== false ) {
 				//log::add('livebox','debug', 'Guest Wifi ' . print_r($content, true));
@@ -2803,7 +2802,7 @@ class liveboxCmd extends cmd
 				$mibs0 = 'rad2g0';
 				$mibs1 = 'rad5g0';
 				$mibs2 = 'rad6g0';
-			} elseif (preg_match("/Livebox (Nautilus)/", $eqLogic->getConfiguration('productClass',''))) {
+			} elseif (preg_match("/Livebox (Nautilus|W7)/", $eqLogic->getConfiguration('productClass',''))) {
 				$mibs0 = 'rad2g0';
 				$mibs1 = 'rad5g0';
 			} else {
