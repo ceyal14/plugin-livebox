@@ -2636,18 +2636,30 @@ class liveboxCmd extends cmd
 				break;
 			case 'debitmontant':
 				$this->setOrder(71);
+				if (version_compare(jeedom::version(), "4.4", ">")) {
+					$this->setTemplate('dashboard', 'gauge');
+				}
 				$this->setTemplate('mobile', 'line');
 				break;
 			case 'debitdescendant':
 				$this->setOrder(72);
+				if (version_compare(jeedom::version(), "4.4", ">")) {
+					$this->setTemplate('dashboard', 'gauge');
+				}
 				$this->setTemplate('mobile', 'line');
 				break;
 			case 'margebruitmontant':
 				$this->setOrder(73);
+				if (version_compare(jeedom::version(), "4.4", ">")) {
+					$this->setTemplate('dashboard', 'gauge');
+				}
 				$this->setTemplate('mobile', 'line');
 				break;
 			case 'margebruitdescendant':
 				$this->setOrder(74);
+				if (version_compare(jeedom::version(), "4.4", ">")) {
+					$this->setTemplate('dashboard', 'gauge');
+				}
 				$this->setTemplate('mobile', 'line');
 				break;
 			case 'lastchange':
