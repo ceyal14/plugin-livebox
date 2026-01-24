@@ -172,3 +172,13 @@ Compatibilité avec PHP 8
 - Mise à jour de l'affichage dans le panel (et page santé)
 
 # Version du 02/11/2024 (passage en stable)
+
+# Version du 14/01/2026
+
+- Compatibilité avec Livebox S et 7.7 (Wifi 7)
+
+# Version du 24/01/2026
+
+- Corrige le widget d'affichage des mesures DSL avec core jeedom 4.4 (visible si le paramètre de personnalisation des widgets est désactivé)
+
+# Version du 25/01/2026 (passage en stable)

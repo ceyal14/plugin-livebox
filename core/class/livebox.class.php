@@ -1353,6 +1353,7 @@ class livebox extends eqLogic {
 					$cmd->setUnite('');
 					$cmd->setType('info');
 					$cmd->setSubType('string');
+					$cmd->setIsVisible(0);
 					$cmd->setIsHistorized(0);
 					$cmd->save();
 				}
@@ -1366,6 +1367,7 @@ class livebox extends eqLogic {
 					$cmd->setUnite('');
 					$cmd->setType('info');
 					$cmd->setSubType('string');
+					$cmd->setIsVisible(0);
 					$cmd->setIsHistorized(0);
 					$cmd->save();
 				}
@@ -1379,6 +1381,7 @@ class livebox extends eqLogic {
 					$cmd->setUnite('');
 					$cmd->setType('info');
 					$cmd->setSubType('string');
+					$cmd->setIsVisible(0);
 					$cmd->setIsHistorized(0);
 					$cmd->save();
 				}
@@ -1529,6 +1532,7 @@ class livebox extends eqLogic {
 				$cmd->setUnite('');
 				$cmd->setType('info');
 				$cmd->setSubType('string');
+				$cmd->setIsVisible(0);
 				$cmd->setIsHistorized(0);
 				$cmd->save();
 			}
