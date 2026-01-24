@@ -2,7 +2,7 @@
 	"id" : "livebox",
 	"name" : "Livebox",
 	"description": {
-		"fr_FR": "Plugin pour Livebox 2, Play, 4, Fibre, 6, 7"
+		"fr_FR": "Plugin pour Livebox 2, Play, 4, Fibre, 6, 7, 7.7 (Wifi 7) et S"
 	},
 	"licence" : "AGPL",
 	"author" : "ceyal14",

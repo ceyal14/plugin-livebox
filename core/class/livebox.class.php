@@ -477,11 +477,7 @@ class livebox extends eqLogic {
 				$listpage = array("sysbus/VoiceService/VoiceApplication:ring" => "");
 				break;
 			case "changewifi":
-				if (preg_match("/Livebox (4|Fibre|6|7)/i", $this->getConfiguration('productClass',''))) {
-					$listpage = array("sysbus/NeMo/Intf/lan:setWLANConfig" => '"mibs":{"penable":{"'.$option['mibs'].'":{"PersistentEnable":'.$option['value'].',"Enable":'.$option['value'].'}}}');
-				} else {
-					$listpage = array("sysbus/NeMo/Intf/lan:setWLANConfig" => '"mibs":{"penable":{"'.$option['mibs'].'":{"PersistentEnable":'.$option['value'].',"Enable":'.$option['value'].'}}}');
-				}
+				$listpage = array("sysbus/NeMo/Intf/lan:setWLANConfig" => '"mibs":{"penable":{"'.$option['mibs'].'":{"PersistentEnable":'.$option['value'].',"Enable":'.$option['value'].'}}}');
 				break;
 			case "changemainwifi":
 				$listpage = array("sysbus/NMC/Wifi:set" => '"Enable":'.$option['value'].',"Status":"'.$option['value'].'"');
@@ -1130,7 +1126,7 @@ class livebox extends eqLogic {
 						$cmd->save();
 					}
 				}
-				if (preg_match("/Livebox (4|Fibre|6|7)/i", $this->getConfiguration('productClass',''))) {
+				if (preg_match("/Livebox (4|Fibre|6|7|Nautilus|W7)/i", $this->getConfiguration('productClass',''))) {
 					$cmd = $this->getCmd(null, 'guestwifion');
 					if ( ! is_object($cmd) ) {
 						$cmd = new liveboxCmd();
@@ -1357,6 +1353,7 @@ class livebox extends eqLogic {
 					$cmd->setUnite('');
 					$cmd->setType('info');
 					$cmd->setSubType('string');
+					$cmd->setIsVisible(0);
 					$cmd->setIsHistorized(0);
 					$cmd->save();
 				}
@@ -1370,6 +1367,7 @@ class livebox extends eqLogic {
 					$cmd->setUnite('');
 					$cmd->setType('info');
 					$cmd->setSubType('string');
+					$cmd->setIsVisible(0);
 					$cmd->setIsHistorized(0);
 					$cmd->save();
 				}
@@ -1383,6 +1381,7 @@ class livebox extends eqLogic {
 					$cmd->setUnite('');
 					$cmd->setType('info');
 					$cmd->setSubType('string');
+					$cmd->setIsVisible(0);
 					$cmd->setIsHistorized(0);
 					$cmd->save();
 				}
@@ -1533,6 +1532,7 @@ class livebox extends eqLogic {
 				$cmd->setUnite('');
 				$cmd->setType('info');
 				$cmd->setSubType('string');
+				$cmd->setIsVisible(0);
 				$cmd->setIsHistorized(0);
 				$cmd->save();
 			}
@@ -1926,25 +1926,31 @@ class livebox extends eqLogic {
 		}
 		($refreshonly != 'all' && $refreshonly != 'wifi') ? $content = false : $content = $this->getPage("wifilist");
 		if ( $content !== false ) {
+			$wifilist =  $content;
 			if ( count($content["status"]) == 1 ) {
 				$content = $this->getPage("wifi");
 				if ( $content !== false ) {
-					if (isset($content["status"]["wlanvap"]["wl0"]["VAPStatus"])) {
-						$this->setConfiguration('wifi24Name', 'wl0');
-						$eqLogic_cmd = $this->getCmd(null, 'wifi2.4status');
-						if (is_object($eqLogic_cmd)) {
+					$eqLogic_cmd = $this->getCmd(null, 'wifi2.4status');
+					if (is_object($eqLogic_cmd)) {
+						if (isset($content["status"]["wlanvap"]["wl0"]["VAPStatus"])) {
+							// Livebox 2
+							$this->setConfiguration('wifi24Name', 'wl0');
 							$statusvalue = $content["status"]["wlanvap"]["wl0"]["VAPStatus"];
-							log::add('livebox','debug','Maj wifi2.4status ' . $eqLogic_cmd->formatValue($statusvalue));
-							$this->checkAndUpdateCmd('wifi2.4status',  $eqLogic_cmd->formatValue($statusvalue));
+						} else {
+							// Livebox unknown
+							log::add('livebox','error','interface wifi 2.4 inconnue. les interfaces disponibles pour ' . $this->getConfiguration('productClass','') . ' sont : ' . implode(', ', array_keys($content["status"]["wlanvap"])) . ' et les interfaces radios ' . implode(', ', $wifilist["status"]));
+							$statusvalue = 0;
 						}
+						log::add('livebox','debug','Maj wifi2.4status ' . $eqLogic_cmd->formatValue($statusvalue));
+						$this->checkAndUpdateCmd('wifi2.4status',  $eqLogic_cmd->formatValue($statusvalue));
 					}
 				}
 			} elseif ( count($content["status"]) == 2 ) {
 				$content = $this->getPage("mainwifistate");
 				if ( $content !== false ) {
-					if (isset($content["status"]["Status"])) {
-						$eqLogic_cmd = $this->getCmd(null, 'wifistatus');
-						if (is_object($eqLogic_cmd)) {
+					$eqLogic_cmd = $this->getCmd(null, 'wifistatus');
+					if (is_object($eqLogic_cmd)) {
+						if (isset($content["status"]["Status"])) {
 							log::add('livebox','debug','Maj wifistatus ' . $eqLogic_cmd->formatValue($content["status"]["Status"]));
 							$this->checkAndUpdateCmd('wifistatus', $eqLogic_cmd->formatValue($content["status"]["Status"]));
 						}
@@ -1952,29 +1958,46 @@ class livebox extends eqLogic {
 				}
 				$content = $this->getPage("wifi");
 				if ( $content !== false ) {
-					if (isset($content["status"]["wlanvap"]["wl0"]["VAPStatus"])) {
-						$this->setConfiguration('wifi24Name', 'wl0');
-						$eqLogic_cmd = $this->getCmd(null, 'wifi2.4status');
-						if (is_object($eqLogic_cmd)) {
+					$eqLogic_cmd = $this->getCmd(null, 'wifi2.4status');
+					if (is_object($eqLogic_cmd)) {
+						if (isset($content["status"]["wlanvap"]["wl0"]["VAPStatus"])) {
+							// Livebox Play, 4, 5
+							$this->setConfiguration('wifi24Name', 'wl0');
 							$statusvalue = $content["status"]["wlanvap"]["wl0"]["VAPStatus"];
-							log::add('livebox','debug','Maj wifi2.4status ' . $eqLogic_cmd->formatValue($statusvalue));
-							$this->checkAndUpdateCmd('wifi2.4status', $eqLogic_cmd->formatValue($statusvalue));
+						} else if (isset($content["status"]["wlanvap"]["vap2g0priv"]["VAPStatus"])) {
+							// Livebox S, W7
+							$this->setConfiguration('wifi24Name', 'vap2g0priv');
+							$statusvalue = $content["status"]["wlanvap"]["vap2g0priv"]["VAPStatus"];
+						} else {
+							// Livebox unknown
+							log::add('livebox','error','interface wifi 2.4 inconnue. les interfaces disponibles pour ' . $this->getConfiguration('productClass','') . ' sont : ' . implode(', ', array_keys($content["status"]["wlanvap"])) . ' et les interfaces radios ' . implode(', ', $wifilist["status"]));
+							$statusvalue = 0;
 						}
+						log::add('livebox','debug','Maj wifi2.4status ' . $eqLogic_cmd->formatValue($statusvalue));
+						$this->checkAndUpdateCmd('wifi2.4status', $eqLogic_cmd->formatValue($statusvalue));
 					}
 					$eqLogic_cmd = $this->getCmd(null, 'wifi5status');
 					if (is_object($eqLogic_cmd)) {
-						if (isset($content["status"]["wlanvap"]["eth6"])) {
-							// Livebox 4.
-							$this->setConfiguration('wifi5Name', 'eth6');
-							$statusvalue = $content["status"]["wlanvap"]["eth6"]["VAPStatus"];
-						} else if (isset($content["status"]["wlanvap"]["eth4"])) {
-							// Livebox 5.
-							$this->setConfiguration('wifi5Name', 'eth4');
-							$statusvalue = $content["status"]["wlanvap"]["eth4"]["VAPStatus"];
-						} else {
-							// Livebox Play.
+						if (isset($content["status"]["wlanvap"]["wl1"]["VAPStatus"])) {
+							// Livebox Play
 							$this->setConfiguration('wifi5Name', 'wl1');
 							$statusvalue = $content["status"]["wlanvap"]["wl1"]["VAPStatus"];
+						} else if (isset($content["status"]["wlanvap"]["eth6"]["VAPStatus"])) {
+							// Livebox 4
+							$this->setConfiguration('wifi5Name', 'eth6');
+							$statusvalue = $content["status"]["wlanvap"]["eth6"]["VAPStatus"];
+						} else if (isset($content["status"]["wlanvap"]["eth4"]["VAPStatus"])) {
+							// Livebox 5
+							$this->setConfiguration('wifi5Name', 'eth4');
+							$statusvalue = $content["status"]["wlanvap"]["eth4"]["VAPStatus"];
+						} else if (isset($content["status"]["wlanvap"]["vap5g0priv"]["VAPStatus"])) {
+							// Livebox S, W7
+							$this->setConfiguration('wifi5Name', 'vap5g0priv');
+							$statusvalue = $content["status"]["wlanvap"]["vap5g0priv"]["VAPStatus"];
+						} else {
+							// Livebox unknown
+							log::add('livebox','error','interface wifi 5 inconnue. les interfaces disponibles pour ' . $this->getConfiguration('productClass','') . ' sont : ' . implode(', ', array_keys($content["status"]["wlanvap"])) . ' et les interfaces radios ' . implode(', ', $wifilist["status"]));
+							$statusvalue = 0;
 						}
 						log::add('livebox','debug','Maj wifi5status ' .$eqLogic_cmd->formatValue($statusvalue));
 						$this->checkAndUpdateCmd('wifi5status', $eqLogic_cmd->formatValue($statusvalue));
@@ -1983,9 +2006,9 @@ class livebox extends eqLogic {
 			} elseif ( count($content["status"]) == 3 ) {
 				$content = $this->getPage("mainwifistate");
 				if ( $content !== false ) {
-					if (isset($content["status"]["Status"])) {
-						$eqLogic_cmd = $this->getCmd(null, 'wifistatus');
-						if (is_object($eqLogic_cmd)) {
+					$eqLogic_cmd = $this->getCmd(null, 'wifistatus');
+					if (is_object($eqLogic_cmd)) {
+						if (isset($content["status"]["Status"])) {
 							log::add('livebox','debug','Maj wifistatus ' . $eqLogic_cmd->formatValue($content["status"]["Status"]));
 							$this->checkAndUpdateCmd('wifistatus', $eqLogic_cmd->formatValue($content["status"]["Status"]));
 						}
@@ -1993,39 +2016,52 @@ class livebox extends eqLogic {
 				}
 				$content = $this->getPage("wifi");
 				if ( $content !== false ) {
-					if (isset($content["status"]["wlanvap"]["vap2g0priv0"]["VAPStatus"])) {
-						$this->setConfiguration('wifi24Name', 'vap2g0priv0');
-						$eqLogic_cmd = $this->getCmd(null, 'wifi2.4status');
-						if (is_object($eqLogic_cmd)) {
+					$eqLogic_cmd = $this->getCmd(null, 'wifi2.4status');
+					if (is_object($eqLogic_cmd)) {
+						if (isset($content["status"]["wlanvap"]["vap2g0priv0"]["VAPStatus"])) {
+							// Livebox 6, 7
+							$this->setConfiguration('wifi24Name', 'vap2g0priv0');
 							$statusvalue = $content["status"]["wlanvap"]["vap2g0priv0"]["VAPStatus"];
-							log::add('livebox','debug','Maj wifi2.4status ' . $eqLogic_cmd->formatValue($statusvalue));
-							$this->checkAndUpdateCmd('wifi2.4status', $eqLogic_cmd->formatValue($statusvalue));
+						} else {
+							// Livebox unknown
+							log::add('livebox','error','interface wifi 2.4 inconnue. les interfaces disponibles pour ' . $this->getConfiguration('productClass','') . ' sont : ' . implode(', ', array_keys($content["status"]["wlanvap"])) . ' et les interfaces radios ' . implode(', ', $wifilist["status"]));
+							$statusvalue = 0;
 						}
+						log::add('livebox','debug','Maj wifi2.4status ' . $eqLogic_cmd->formatValue($statusvalue));
+						$this->checkAndUpdateCmd('wifi2.4status', $eqLogic_cmd->formatValue($statusvalue));
 					}
-					if (isset($content["status"]["wlanvap"]["vap5g0priv0"])) {
-						// Livebox 6.
-						$this->setConfiguration('wifi5Name', 'vap5g0priv0');
-						$eqLogic_cmd = $this->getCmd(null, 'wifi5status');
-						if (is_object($eqLogic_cmd)) {
+					$eqLogic_cmd = $this->getCmd(null, 'wifi5status');
+					if (is_object($eqLogic_cmd)) {
+						if (isset($content["status"]["wlanvap"]["vap5g0priv0"]["VAPStatus"])) {
+							// Livebox 6, 7
+							$this->setConfiguration('wifi5Name', 'vap5g0priv0');
 							$statusvalue = $content["status"]["wlanvap"]["vap5g0priv0"]["VAPStatus"];
-							log::add('livebox','debug','Maj wifi5status ' .$eqLogic_cmd->formatValue($statusvalue));
-							$this->checkAndUpdateCmd('wifi5status', $eqLogic_cmd->formatValue($statusvalue));
+						} else {
+							// Livebox unknown
+							log::add('livebox','error','interface wifi 5 inconnue. les interfaces disponibles pour ' . $this->getConfiguration('productClass','') . ' sont : ' . implode(', ', array_keys($content["status"]["wlanvap"])) . ' et les interfaces radios ' . implode(', ', $wifilist["status"]));
+							$statusvalue = 0;
 						}
+						log::add('livebox','debug','Maj wifi5status ' .$eqLogic_cmd->formatValue($statusvalue));
+						$this->checkAndUpdateCmd('wifi5status', $eqLogic_cmd->formatValue($statusvalue));
 					}
-					if (isset($content["status"]["wlanvap"]["vap6g0priv0"])) {
-						// Livebox 6.
-						$this->setConfiguration('wifi6Name', 'vap6g0priv0');
-						$eqLogic_cmd = $this->getCmd(null, 'wifi6status');
-						if (is_object($eqLogic_cmd)) {
+					$eqLogic_cmd = $this->getCmd(null, 'wifi6status');
+					if (is_object($eqLogic_cmd)) {
+						if (isset($content["status"]["wlanvap"]["vap6g0priv0"]["VAPStatus"])) {
+							// Livebox 6, 7
+							$this->setConfiguration('wifi6Name', 'vap6g0priv0');
 							$statusvalue = $content["status"]["wlanvap"]["vap6g0priv0"]["VAPStatus"];
-							log::add('livebox','debug','Maj wifi6status ' .$eqLogic_cmd->formatValue($statusvalue));
-							$this->checkAndUpdateCmd('wifi6status', $eqLogic_cmd->formatValue($statusvalue));
+						} else {
+							// Livebox unknown
+							log::add('livebox','error','interface wifi 6 inconnue. les interfaces disponibles pour ' . $this->getConfiguration('productClass','') . ' sont : ' . implode(', ', array_keys($content["status"]["wlanvap"])) . ' et les interfaces radios ' . implode(', ', $wifilist["status"]));
+							$statusvalue = 0;
 						}
+						log::add('livebox','debug','Maj wifi6status ' .$eqLogic_cmd->formatValue($statusvalue));
+						$this->checkAndUpdateCmd('wifi6status', $eqLogic_cmd->formatValue($statusvalue));
 					}
 				}
 			}
 		}
-		if (preg_match("/Livebox (4|Fibre|6|7)/i", $this->getConfiguration('productClass',''))) {
+		if (preg_match("/Livebox (4|Fibre|6|7|Nautilus|W7)/i", $this->getConfiguration('productClass',''))) {
 			($refreshonly != 'all' && $refreshonly != 'wifi') ? $content = false : $content = $this->getPage("guestwifistate");
 			if ( $content !== false ) {
 				//log::add('livebox','debug', 'Guest Wifi ' . print_r($content, true));
@@ -2604,18 +2640,30 @@ class liveboxCmd extends cmd
 				break;
 			case 'debitmontant':
 				$this->setOrder(71);
+				if (version_compare(jeedom::version(), "4.4", ">")) {
+					$this->setTemplate('dashboard', 'gauge');
+				}
 				$this->setTemplate('mobile', 'line');
 				break;
 			case 'debitdescendant':
 				$this->setOrder(72);
+				if (version_compare(jeedom::version(), "4.4", ">")) {
+					$this->setTemplate('dashboard', 'gauge');
+				}
 				$this->setTemplate('mobile', 'line');
 				break;
 			case 'margebruitmontant':
 				$this->setOrder(73);
+				if (version_compare(jeedom::version(), "4.4", ">")) {
+					$this->setTemplate('dashboard', 'gauge');
+				}
 				$this->setTemplate('mobile', 'line');
 				break;
 			case 'margebruitdescendant':
 				$this->setOrder(74);
+				if (version_compare(jeedom::version(), "4.4", ">")) {
+					$this->setTemplate('dashboard', 'gauge');
+				}
 				$this->setTemplate('mobile', 'line');
 				break;
 			case 'lastchange':
@@ -2758,19 +2806,25 @@ class liveboxCmd extends cmd
 		}
 		if ($eqLogic->getConfiguration('type','') == 'box') {
 			$option = array();
-			if (preg_match("/Livebox (4|Fibre)/i", $eqLogic->getConfiguration('productClass',''))) {
-				log::add('livebox','debug','wifi0_bcm wifi0_quan');
+			if (preg_match("/Livebox (FTTH v2)/i", $eqLogic->getConfiguration('productClass',''))) {
+				$mibs0 = 'wifi0_ath';
+			} elseif (preg_match("/Livebox (3)/i", $eqLogic->getConfiguration('productClass',''))) {
+				$mibs0 = 'wifi0_ath';
+				$mibs1 = 'wifi1_ath';
+			} elseif (preg_match("/Livebox (4|Fibre)/i", $eqLogic->getConfiguration('productClass',''))) {
 				$mibs0 = 'wifi0_bcm';
 				$mibs1 = 'wifi0_quan';
 			} elseif (preg_match("/Livebox (6|7)/", $eqLogic->getConfiguration('productClass',''))) {
-				log::add('livebox','debug','rad2g0 rad5g0 rad6g0');
 				$mibs0 = 'rad2g0';
 				$mibs1 = 'rad5g0';
 				$mibs2 = 'rad6g0';
+			} elseif (preg_match("/Livebox (Nautilus|W7)/", $eqLogic->getConfiguration('productClass',''))) {
+				$mibs0 = 'rad2g0';
+				$mibs1 = 'rad5g0';
 			} else {
-				log::add('livebox','debug','wifi0_ath wifi1_ath');
-				$mibs0 = 'wifi0_ath';
-				$mibs1 = 'wifi1_ath';
+				// Livebox unknown
+				log::add('livebox','error','interfaces radio inconnues pour ' . $eqLogic->getConfiguration('productClass',''));
+				return;
 			}
 			switch ($this->getLogicalId()) {
 				case "reset":
